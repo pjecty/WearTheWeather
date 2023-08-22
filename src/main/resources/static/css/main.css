@@ -1,0 +1,309 @@
+* {
+    font-family: 'Noto Sans KR', sans-serif;
+}
+
+ .container {
+     width: 100%;
+     max-width: 100%;
+ }
+
+ .myTable {
+     width: 80%;
+     height: 90%;
+     margin-top: -50px;
+     margin-left: -80px;
+     text-align: center;
+     border-collapse: separate;
+     border-spacing: 0 30px;
+ }
+
+.myTable th {
+   font-size: 25px;
+    margin-bottom: 50px;
+}
+.myTable td {
+
+}
+
+.containerLogin {
+    width: 650px;
+    position: relative;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+
+
+
+.box {
+    width: 100%;
+    height: 120px;
+    background-color: #558BCF;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 0 30px;
+    color: white;
+}
+
+.myBox {
+    width: 100%;
+    height: 200px;
+    background-color: #f8f9fa;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 0 30px;
+    color: white;
+}
+
+
+#header ul li {
+    margin-top: 50px;
+    float: left;
+    list-style-type: none;
+}
+
+#header ul li a {
+    display: inline-block;
+    padding: 15px;
+    text-decoration: none;
+    color: white;
+}
+
+
+#area{
+    position: relative;
+    left: 700px;
+    list-style-type: none;
+    display: inline-block;
+    font-size: 20px;
+}
+
+#nav ul li {
+    float: left;
+    list-style-type: none;
+}
+
+#nav ul li a {
+    display: inline-block;
+    padding: 15px;
+    text-decoration: none;
+    color: white;
+
+}
+
+#nav ul li.board-name {
+    position: relative;
+    left: 500px;
+    list-style-type: none;
+    display: inline-block;
+    font-size: 25px;
+}
+
+#grayBox {
+    width: 780px;
+    height: 3px;
+    background-color: gainsboro;
+    margin-top: -420px;
+    margin-left: 530px;
+}
+
+
+#detailButton button {
+    background-color: #558BCF;
+    color: white;
+    width: 180px; height: 80px; border-radius: 10px;
+}
+
+
+.grayBox2 {
+    margin-top: -450px;
+    width: 100%;
+    height: 3px;
+    background-color: gainsboro;
+}
+
+.grayBox_vertical {
+    position: absolute;
+    top:798px;
+    left: 50%;
+    width: 3px;
+    height: 370px;
+    background-color: gainsboro;
+    display: inline-block;
+}
+
+
+.detail_3_left {
+    position: absolute;
+    top:796px;
+    left: 52%;
+    display: inline-block;
+    white-space: pre-line;
+}
+
+.grayBox3 {
+    position: absolute;
+    top:1165px;
+    width: 68%;
+    height: 3px;
+    background-color: gainsboro;
+}
+.detailsButtonList button {
+    background-color: #558BCF;
+    color: white;
+    display: flex;
+    align-items: flex-start;
+    margin-top: -85px;
+    margin-left: 70px;
+    width: 60px;
+    height: 30px;
+    font-size: 15px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.detailLikeButton {
+    display: flex;
+    align-items: flex-start;
+    background-color: #558BCF;
+    color: white;
+    width: 180px; height: 80px; border-radius: 10px;
+    text-align: center;
+    border: 2px solid black;
+}
+
+.pointButton {
+    background-color: #558BCF;
+    color: white;
+    position: absolute;
+    top: 1135px;
+    left: 925px;
+    width: 90px;
+    height: 30px;
+    font-size: 15px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.payButton {
+    background-color: #558BCF;
+    color: white;
+    position: absolute;
+    left: 70px;
+    top: 110px;
+    width: 400px;
+    height: 60px;
+    font-size: 35px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+#body
+{
+    margin-left: 304px;
+
+}
+
+.successLine {
+    background-color: gainsboro;
+    margin-top: 20px;
+    margin-left: -23px;
+    width: 600px;
+    height: 2px;
+}
+
+#closeButton button {
+    background-color: #558BCF;
+    color: white;
+    width: 130px; height: 40px; border-radius: 10px;
+    border: black solid 1px;
+}
+
+.day-button {
+    background: none; /* 배경색을 투명하게 설정 */
+    border: none; /* 외곽선 제거 */
+    z-index: 1;
+}
+
+.day-img {
+    width: 50px;
+    height: 50px;
+}
+
+.day-button:hover img {
+    transform: scale(1.2);
+    transition: transform 0.3s;
+    object-fit: cover;
+    opacity: 0.8;
+}
+
+.more-link:hover {
+    color: #558BCF !important;
+}
+
+.nav-link:hover {
+    color: #558BCF !important;
+    background-color: white !important;
+}
+
+.save_button{
+    background-color: #558BCF;
+    color:white;
+    border: none;
+    font-size: 17px;
+    border-radius: 5px;
+    height: 35px;
+    margin-top: 18px;
+    margin-left: 23px;
+
+
+}
+
+.login_button2{
+    background-color: #558BCF;
+    color:white;
+    border: none;
+    font-size: 20px;
+    width: 400px;
+    height: 50px;
+    margin-top: 10px;
+    margin-left: 55px;
+
+
+}
+
+.gender-label {
+    margin-right: 10px; /* 원하는 간격으로 조정하세요 */
+}
+
+.sideBanner {
+    position: absolute;
+    width: 150px;
+    height: 200px;
+    top: 50px;
+
+}
+
+.floating_menu{
+    margin-top: 20px;
+    margin-left: 40px;
+}
+
+.floating_menu a{
+    color: white;
+    text-decoration: none;
+    font-size: 20px;
+}
+
+.table {
+    width: 700px;
+}
+
+.search-container img{
+    width: 150px;
+    height: 150px;
+}
+/*.pageTitle {position: fixed; left: 0; top: 0; width: 100%; height: 52px; line-height: 52px; color: #fff; text-align: center; background: #111;}*/

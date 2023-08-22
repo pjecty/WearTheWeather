@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@700&display=swap" rel="stylesheet">
+    <title>Title</title>
+</head>
+<body>
+<div th:fragment="header" class="container" id="header" >
+    <div class="box">
+        <ul>
+            <li>
+                <a href="/">
+                    <img src="/img/WearTheWeatherWhiteLogo.png" style="width: 110px; height: 110px; ">
+                </a>
+            </li>
+        </ul>
+        <ul id="area">
+            <li class="un-name" id="un-area">
+
+            </li>
+            <li class="login-name" id="login-area">
+
+            </li>
+        </ul>
+
+        <script th:inline="javascript">
+            const unArea = document.getElementById("un-area");
+            const loginArea = document.getElementById("login-area");
+            const memberEmail = [[${session.loginEmail}]];
+            const memberNickName = [[${session.memberNickName}]];
+            const adminEmail = "gkdudquf1@naver.com";
+            if(memberNickName == null){
+                unArea.innerHTML =  "<a href='/member/memberLogin' style='margin-left:200px; '>로그인</a>"
+            }else if (memberEmail == adminEmail){
+                loginArea.innerHTML = "<a href='/admin/index'>"+ "관리자페이지</a>"+"<a href='/member/logout'>" +
+                    "logout</a>";
+            }else {
+                loginArea.innerHTML = "<a href='/member/mypage'>"+ memberNickName + "님 환영합니다!</a>"+"<a href='/member/logout'>" +
+                    "logout</a>";
+            }
+
+        </script>
+    </div>
+
+</div>
+
+</body>
+
+</html>

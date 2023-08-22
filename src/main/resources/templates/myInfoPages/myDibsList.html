@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <th:block th:replace="component/config :: config"></th:block>
+    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<style>
+    #section{
+        position: relative;
+        left: 300px;
+        display: flex;
+    }
+</style>
+<body>
+<div th:replace="component/header :: header"></div>
+<div th:replace="component/nav :: nav"></div>
+<div th:replace="component/mypageNav :: mypageNav"></div>
+<div th:replace="component/infonav :: infonav"></div>
+<div th:replace="component/chatNav :: chatBanner"></div>
+
+<div class="container" id="section" style="margin-top: 70px; height:600px">
+    <table class="myTable">
+        <thead>
+        <tr>
+            <div style="position: absolute; width: 1050px; height: 1px; background-color: black; top:-50px; margin-left: -60px; "> </div>
+            <th>상품이미지</th>
+            <th>상품명</th>
+            <th>판매지역</th>
+            <th>작성시간</th>
+            <th>조회수</th>
+            <th>찜한수</th>
+            <div style="position: absolute; width: 1050px; height: 1px; background-color: black; top:50px; margin-left: -60px;"> </div>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="MarketProduct: ${MarketProduct}" varStatus="loop">
+            <td>
+                <div style="position: absolute; width: 1000px; height: 1px; background-color: gainsboro; margin-left: 85px;"> </div>
+                <img th:src="@{|/upload/${#strings.replace(MarketProduct.storedFileName[0], '[', '').replace(']', '')}|}"
+                     style="max-width: 130px;">
+                <div style="position: absolute; width: 1000px; height: 1px; background-color: gainsboro; margin-left: 85px;"> </div>
+            </td>
+            <td th:text="${MarketProduct.productTitle}">
+            </td>
+            <td th:text="${MarketProduct.transactionArea}">
+            </td>
+            <td th:text="${MarketProduct.createdAt}">
+            </td>
+            <td th:text="${MarketProduct.productHits}">
+            </td>
+            <td th:text="${MarketProduct.marketLikes}">
+            </td>
+            <!-- 다른 속성도 필요에 따라 추가할 수 있습니다 -->
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div>
+    <nav aria-label="Page navigation example">
+<!--        <ul class="pagination justify-content-center">-->
+<!--            <li class="page-item" th:classappend="${1==MarketProduct.pageable.pageNumber+1 }?'disabled'">-->
+<!--                <a class="page-link" href="#" th:href="@{/member/marketProduct(page=${MarketProduct.pageable.pageNumber-1})}" tabindex="-1" aria-disabled="true">이전</a>-->
+<!--            </li>-->
+<!--            <li class="page-item" th:classappend="${i==MarketProduct.pageable.pageNumber+1 }?'disabled'" th:each="i : ${#numbers.sequence(startPage, endPage)}">-->
+<!--                <a class="page-link" href="#" th:href="@{/member/marketProduct(page=${i - 1})}" th:text="${i}">1</a></li>-->
+<!--            <li class="page-item" th:classappend="${MarketProduct.totalPages==MarketProduct.pageable.pageNumber+1 }?'disabled'">-->
+<!--                <a class="page-link" href="#" th:href="@{/member/marketProduct(page=${MarketProduct.pageable.pageNumber+1})}">다음</a>-->
+<!--            </li>-->
+<!--        </ul>-->
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${MarketProduct.pageable.pageNumber == 0} ? 'disabled'">
+                <a class="page-link" href="#" th:href="@{/member/marketProduct(page=${MarketProduct.pageable.pageNumber-1}, type=${type}, q=${q})}" tabindex="-1" aria-disabled="true">이전</a>
+            </li>
+            <li class="page-item" th:each="i : ${#numbers.sequence(startPage, endPage)}" th:classappend="${i==MarketProduct.pageable.pageNumber+1} ? 'disabled'">
+                <a class="page-link" href="#" th:if="${i > 0}" th:href="@{/member/myBoardList(page=${i - 1}, type=${type}, q=${q})}" th:text="${i}"></a>
+            </li>
+            <li class="page-item" th:classappend="${MarketProduct.totalPages == MarketProduct.pageable.pageNumber+1 || MarketProduct.getTotalElements() == 0} ? 'disabled'">
+                <a class="page-link" href="#" th:href="@{/member/marketProduct(page=${MarketProduct.pageable.pageNumber+1}, type=${type}, q=${q})}">다음</a>
+            </li>
+        </ul>
+    </nav>
+</div>
+<div th:replace="component/footer :: footer"></div>
+</body>
+</html>

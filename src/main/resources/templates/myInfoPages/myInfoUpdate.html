@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <th:block th:replace="component/config :: config"></th:block>
+    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<style>
+    #section{
+        position: relative;
+        left: 300px;
+        display: flex;
+    }
+</style>
+<body>
+<div th:replace="component/header :: header"></div>
+<div th:replace="component/nav :: nav"></div>
+<div th:replace="component/mypageNav :: mypageNav"></div>
+<div th:replace="component/infonav :: infonav"></div>
+<div th:replace="component/chatNav :: chatBanner"></div>
+
+<div class="container" id="section" style="margin-top: 70px; height:600px">
+
+    <h2>회원정보수정</h2>
+
+    <div style="position: absolute; top:100px; ">
+    <h5 style="margin-top: 40px;">이메일</h5>
+    <h5 style="margin-top: 40px;">비밀번호</h5>
+    <h5 style="margin-top: 40px;">닉네임</h5>
+    <h5 style="margin-top: 40px;">성별</h5>
+    </div>
+    <div>
+    <form style="margin-top: 130px; margin-left: -30px;">
+        <input type="hidden" name="memberPoints" th:value="${member.memberPoints}">
+        <input type="hidden" name="memberWeatherPay" th:value="${member.memberWeatherPay}">
+        <input type="hidden" name="id" th:value="${member.id}">
+        <input style="margin-top: 10px;" type="text" name="memberEmail" class="form-control" th:value="${member.memberEmail}" readonly>
+        <input type="hidden" name="platform" th:value="${member.platform}" id="platform">
+        <input type="password" name="memberPassword" class="form-control" th:value="${member.memberPassword}"
+               id="PasswordInput" style="margin-top: 30px; display: block" placeholder="비밀번호수정" >
+        <div>
+            <input type="hidden" class="form-control" id="currentNickName" th:value="${member.memberNickName}">
+            <input  style="margin-top: 30px;" type="text" class="form-control" name="memberNickName" th:value="${member.memberNickName}"
+                   id="memberNickName" onblur="nickname()">
+            <h6 id="membernicknameconfirmtext"></h6><br>
+        </div>
+        <div style="margin-top: 0px;">
+            <label><input type="radio" name="memberGender" value="male" th:checked="${member.memberGender == 'male'}">남성</label>
+            <label><input type="radio" name="memberGender" value="female"
+                          th:checked="${member.memberGender == 'female'}">여성</label>
+        </div>
+        <input class="login_button2" style="margin-top: 100px; margin-left: -150px;" type="button" onclick="memberUpdate()" value="수정하기">
+    </form>
+    </div>
+</div>
+<div th:replace="component/footer :: footer"></div>
+</body>
+<script>
+    const res = document.getElementById("platform").value;
+    console.log(res);
+    $(function () {
+        if (res.length != 0) {
+            document.getElementById("PasswordInput").style.display = "none";
+        } else {
+            document.getElementById("PasswordInput").style.display = "";
+        }
+    })
+
+    // 닉네임 중복
+
+    const nickname = () => {
+        const currentNickName = document.getElementById("currentNickName").value;
+        const memberNickName = document.getElementById("memberNickName").value;
+        const memberNickNameCheck = document.getElementById("membernicknameconfirmtext");
+        const exp = /^(?!.*(?:씨발|꺼져|병신|새꺄|자살)).*$/;
+        $.ajax({
+            type: "post",
+            url: "/member/nickcheck",
+            data: {
+                "memberNickName": memberNickName
+            },
+            success: function (res) {
+                if (memberNickName.length != 0) {
+                    if (memberNickName.match(exp)) {
+                        if (currentNickName == memberNickName) {
+                            memberNickNameCheck.innerText = "현재 계정과 같은 닉네임입니다"
+                            memberNickNameCheck.style.color = "green";
+                        } else if (res == 0) {
+                            console.log(res);
+                            memberNickNameCheck.innerText = "사용 가능한 닉네임입니다"
+                            memberNickNameCheck.style.color = "green";
+                        } else {
+                            console.log(res);
+                            memberNickNameCheck.innerText = "중복된 닉네임입니다"
+                            memberNickNameCheck.style.color = "red";
+                            document.getElementById("memberNickName").focus();
+                        }
+
+                    } else {
+                        memberNickNameCheck.innerText = "비속어가 포함된 단어는 사용하실 수 없습니다"
+                        memberNickNameCheck.style.color = "red";
+                        document.getElementById("memberNickName").focus();
+                    }
+                } else {
+                    memberNickNameCheck.innerText = "필수 입력 사항입니다"
+                    memberNickNameCheck.style.color = "red";
+                    document.getElementById("memberNickName").focus();
+                }
+            },
+            error: function () {
+                alert("서버 요청 실패");
+            }
+        });
+    }
+
+
+</script>
+<script th:inline="javascript">
+    // 수정처리 axios
+    memberUpdate = () => {
+        const kakao = document.querySelector('input[name="platform"]').value;
+        const pay = document.querySelector('input[name="memberWeatherPay"]').value;
+        const points = document.querySelector('input[name="memberPoints"]').value;
+        const email = document.querySelector('input[name="memberEmail"]').value;
+        const id = document.querySelector('input[name="id"]').value;
+        const password = document.querySelector('input[name="memberPassword"]').value;
+        const nickname = document.querySelector('input[name="memberNickName"]').value;
+        const gen = document.querySelector('input[name="memberGender"]:checked').value;
+
+        axios({
+            method: "put",
+            url: "/member/" + id,
+            data: {
+                id: id,
+                memberEmail: email,
+                memberPassword: password,
+                memberNickName: nickname,
+                memberWeatherPay: pay,
+                memberPoints: points,
+                memberGender: gen,
+                platform: kakao
+            }
+        }).then(res => {
+            alert("회원정보 수정 완료")
+            location.href = "/member/mypage";
+        }).catch(err => {
+            alert("회원정보 수정 실패!");
+        })
+    }
+</script>
+<script>
+    const floatPosition = parseInt($(".sideBanner").css('top'))
+
+    // scroll 인식
+    $(window).scroll(function() {
+
+        // 현재 스크롤 위치
+        const currentTop = $(window).scrollTop();
+        const bannerTop = currentTop + floatPosition + "px";
+
+        //이동 애니메이션
+        $(".sideBanner").stop().animate({
+            "top" : bannerTop
+        }, 500);
+
+    }).scroll();
+</script>
+
+</html>

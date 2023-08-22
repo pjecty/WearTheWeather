@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <th:block th:replace="component/config :: config"></th:block>
+    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<style>
+    #section{
+        position: relative;
+        left: 300px;
+        display: flex;
+    }
+</style>
+<body>
+<div th:replace="component/header :: header"></div>
+<div th:replace="component/nav :: nav"></div>
+<div th:replace="component/mypageNav :: mypageNav"></div>
+<div th:replace="component/infonav :: infonav"></div>
+<div th:replace="component/chatNav :: chatBanner"></div>
+
+<div class="container" id="section" style="margin-top: 70px; height:600px">
+    <table class="myTable">
+        <thead>
+        <tr>
+            <div style="position: absolute; width: 1050px; height: 1px; background-color: black; top:-50px; margin-left: -60px; "> </div>
+            <th>거래번호</th>
+            <th>거래금액</th>
+            <th>거래일시</th>
+            <th>제품 거래상태</th>
+            <div style="position: absolute; width: 1050px; height: 1px; background-color: black; top:50px; margin-left: -60px;"> </div>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="marketPaymentDTOS: ${marketPaymentDTOS}" varStatus="loop">
+            <td th:text="${marketPaymentDTOS.ProductTitle}"></td>
+
+            <td th:text="${marketPaymentDTOS.totalAmount}">
+            </td>
+
+            <td th:text="${marketPaymentDTOS.createdAt}">
+            </td>
+            <td>
+                <button class="btn btn-primary"
+                        th:if="${marketPaymentDTOS.buyerId == currentMember.id && marketPaymentDTOS.tradeStatus == 1}"
+                        th:text="'구매확정'"
+                        th:onclick="myFunction([[${marketPaymentDTOS.id}]])"></button>
+
+                <span th:if="${marketPaymentDTOS.buyerId == currentMember.id && marketPaymentDTOS.tradeStatus == 2}"
+                      th:text="'구매완료'"></span>
+
+                <span th:if="${marketPaymentDTOS.sellerId == currentMember.id && marketPaymentDTOS.tradeStatus == 1}"
+                      th:text="'거래중'"></span>
+
+                <span th:if="${marketPaymentDTOS.sellerId == currentMember.id && marketPaymentDTOS.tradeStatus == 2}"
+                      th:text="'판매완료'"></span>
+            </td>
+
+            <input type="hidden" th:value="${marketPaymentDTOS.productId}" id="productId">
+            <input type="hidden" th:value="${marketPaymentDTOS.sellerId}" id="writerId">
+
+            <!-- 다른 속성도 필요에 따라 추가할 수 있습니다 -->
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div>
+    <nav aria-label="Page navigation example">
+<!--        <ul class="pagination justify-content-center">-->
+<!--            <li class="page-item" th:classappend="${1==marketPaymentDTOS.pageable.pageNumber+1 }?'disabled'">-->
+<!--                <a class="page-link" href="#"-->
+<!--                   th:href="@{/member/myTradeList(page=${marketPaymentDTOS.pageable.pageNumber-1})}" tabindex="-1"-->
+<!--                   aria-disabled="true">Previous</a>-->
+<!--            </li>-->
+<!--            <li class="page-item" th:classappend="${i==marketPaymentDTOS.pageable.pageNumber+1 }?'disabled'"-->
+<!--                th:each="i : ${#numbers.sequence(startPage, endPage)}">-->
+<!--                <a class="page-link" href="#" th:href="@{/member/myTradeList(page=${i - 1})}" th:text="${i}">1</a>-->
+<!--            </li>-->
+<!--            <li class="page-item"-->
+<!--                th:classappend="${marketPaymentDTOS.totalPages==marketPaymentDTOS.pageable.pageNumber+1 }?'disabled'">-->
+<!--                <a class="page-link" href="#"-->
+<!--                   th:href="@{/member/myTradeList(page=${marketPaymentDTOS.pageable.pageNumber+1})}">Next</a>-->
+<!--            </li>-->
+<!--        </ul>-->
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${marketPaymentDTOS.pageable.pageNumber == 0} ? 'disabled'">
+                <a class="page-link" href="#" th:href="@{/member/myTradeList(page=${marketPaymentDTOS.pageable.pageNumber-1}, type=${type}, q=${q})}" tabindex="-1" aria-disabled="true">이전</a>
+            </li>
+            <li class="page-item" th:each="i : ${#numbers.sequence(startPage, endPage)}" th:classappend="${i==marketPaymentDTOS.pageable.pageNumber+1} ? 'disabled'">
+                <a class="page-link" href="#" th:if="${i > 0}" th:href="@{/member/myTradeList(page=${i - 1}, type=${type}, q=${q})}" th:text="${i}"></a>
+            </li>
+            <li class="page-item" th:classappend="${marketPaymentDTOS.totalPages == marketPaymentDTOS.pageable.pageNumber+1 || marketPaymentDTOS.getTotalElements() == 0} ? 'disabled'">
+                <a class="page-link" href="#" th:href="@{/member/myTradeList(page=${marketPaymentDTOS.pageable.pageNumber+1}, type=${type}, q=${q})}">다음</a>
+            </li>
+        </ul>
+    </nav>
+</div>
+<div th:replace="component/footer :: footer"></div>
+</body>
+<script th:inline="javascript">
+    const send_buyConfirmAlarm = () => {
+        console.log("거래확인됌")
+        const productId = document.querySelector("#productId").value;
+        const writerId = document.querySelector("#writerId").value;
+        console.log(productId, writerId);
+        axios({
+            method: "post",
+            url: "/alarm/buyConfirmAlarm",
+            data: {
+                productId: productId,
+                writerId: writerId
+            }
+        }).then(res => {
+
+        }).catch(err => {
+
+        });
+
+    }
+
+    myFunction = (id) => {
+        const  id1 = id;
+        if (!confirm("구매 확정을 하시겠습니까?")) {
+
+        } else {
+            $.ajax({
+                type: "post",
+                url: "/market/buyConfirm",
+                data: {
+                    id: id1
+                }, success: function (res) {
+                    send_buyConfirmAlarm();
+                    alert("구매 확정 되었습니다");
+                    console.log(res);
+                    location.reload();
+
+                }, error: function (res) {
+                    console.log(res);
+
+                    alert("구매 실패!")
+                }
+            });
+        }
+
+    }
+</script>
+</html>

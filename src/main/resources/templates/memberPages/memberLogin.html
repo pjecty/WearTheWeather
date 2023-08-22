@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <th:block th:replace="component/config :: config"></th:block>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script type="text/javascript" src="https://static.nid.naver.com/js/naverLogin_implicit-1.0.3.js"
+            charset="utf-8"></script>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+</head>
+<style>
+    body {
+        background-color: gainsboro;
+    }
+
+    body > :not(.containerLogin) {
+        background-color: white;
+    }
+</style>
+<body>
+<div th:replace="component/navLogin :: navLogin"></div>
+<div class="containerLogin" style="width: 650px; display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 390px 0 0 0; height: 400px">
+    <div id="whiteBox" style="width: 650px; height: 900px; background-color: white; margin-top: -20px">
+        <div id="weatherResult" style="margin-left: 75px; margin-top: 20px;"></div>
+        <div style="display: flex; flex-direction: row; justify-content: center; align-items: center;">
+            <form action="/member/memberLogin" method="post" style="width: 400px;">
+                <input type="hidden" name="redirectURI" th:value="${redirectURI}">
+                <div style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                    <input type="text" name="memberEmail" placeholder="이메일" class="form-control"> <br>
+                    <input type="password" name="memberPassword" placeholder="비밀번호" class="form-control"> <br>
+                </div>
+                <p id="login-result" style="color: red; display: none">이메일 또는 비밀번호가 틀렸습니다.</p>
+                <input type="button" value="로그인" onclick="login()" style="width: 190px; height: 50px; background-color: #558BCF; color: white; border: none; border-radius: 10px; font-size: 1.5em;">
+                <input type="button" value="회원가입" onclick="saveForm()" style="width: 190px; height: 50px; background-color: #558BCF; color: white; border: none; border-radius: 10px; font-size: 1.5em; margin-left: 10px;">
+            </form>
+        </div>
+        <form style="display: flex; justify-content: center;">
+            <!--이메일과 비밀번호를 입력하고 로그인 버튼을 클릭하세요-->
+        </form>
+        <div style="display: flex; justify-content: center; margin-top:20px; margin-bottom: 20px;">
+            <a th:href="@{https://kauth.kakao.com/oauth/authorize(client_id='cbfb51c5fe3c24569106a577d987998b', redirect_uri='http://localhost:8045/auth/kakao/callback', response_type='code')}">
+                <img src="/image/kakao_login_medium_wide.png" style="width: 400px; height: 55px;"/>
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    const login = () => {
+        const email = document.querySelector('input[name="memberEmail"]').value;
+        const password = document.querySelector('input[name="memberPassword"]').value;
+        const redirectURI = document.querySelector('input[name="redirectURI"]').value;
+        const adminEmail = "gkdudquf@naver.com";
+        console.log("이메일", email);
+        console.log("비밀번호", password);
+        axios({
+            method: "post",
+            url: "/member/login/axios/",
+            data: {
+                memberEmail: email,
+                memberPassword: password
+            }
+        }).then(res => {
+            console.log("res", res);
+            if (res.data.memberEmail == adminEmail) {
+                // 관리자 로그인인 경우
+                location.href = "/admin/index";
+            } else if (redirectURI) {
+                // 리다이렉트 주소가 있는 경우
+                location.href = redirectURI;
+            } else {
+                // 리다이렉트 주소가 없는 경우 기본 페이지로 이동
+                location.href = "/member/mypage";
+            }
+        }).catch(err => {
+            console.log("err", err);
+            document.getElementById("login-result").style.display = "block";
+        });
+    }
+</script>
+
+<!--회원가입 버튼을 눌렀을 때 onclick 적용 -->
+<script>
+    const saveForm = () => {
+        location.href = "/member/memberSave";
+    }
+</script>
+<script>
+    $(function () {
+        // Check if we can access the Geolocation API
+        if (navigator.geolocation) {
+            // Regularly get location information
+            var id = navigator.geolocation.watchPosition(
+                function (pos) {
+                    $('#latitude').html(pos.coords.latitude); // 위도
+                    $('#longitude').html(pos.coords.longitude); // 경도
+                });
+
+            // Stop monitoring with button click
+            $('#btnStop').click(function () {
+                navigator.geolocation.clearWatch(id);
+            });
+        } else {
+            alert("이 브라우저에서는 Geolocation을 지원하지 않습니다.")
+        }
+
+    });
+</script>
+<script>
+    const API_KEY = '9d1cf1fe0889f04622c00ea6dbe6c73d';
+
+    function displayWeather(temperature, weather, name) {
+        const resultElement = document.getElementById("weatherResult");
+
+
+        const weatherIconElement = document.createElement("img");
+        weatherIconElement.classList.remove("weather-icon");
+        weatherIconElement.classList.add("weather-icon");
+        weatherIconElement.style.width = "500px"; // 가로 크기 설정
+        weatherIconElement.style.height = "613px"; // 세로 크기 설정
+        const iconFileName = getIconFileName(weather);
+        weatherIconElement.src = `/img/${iconFileName}`;
+
+        resultElement.appendChild(weatherIconElement);
+    }
+
+    function getIconFileName(weather) {
+        const weatherIcons = {
+            "Clear": "login_img/Clear.png",
+            "Clouds": "login_img/Clouds.png",
+            "Rain": "login_img/Rain.png",
+            "Snow": "login_img/Snow.png"
+        };
+
+        const weatherKey = Object.keys(weatherIcons).find(key => weather.includes(key));
+
+        return weatherIcons[weatherKey];
+    }
+
+    function getWeather() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(position => {
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
+
+                fetch(
+                    `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${API_KEY}&units=metric`
+                )
+                    .then(response => response.json())
+                    .then(data => {
+                        const temperature = data.main.temp; // 온도
+                        let weather;
+
+                        if (data.weather[0].main === "Mist" || data.weather[0].main === "Thunderstorm") {
+                            weather = "Rain";
+                        } else {
+                            weather = data.weather[0].main;
+                        } // 날씨 조건
+                        const name = data.name; // 날씨 조건
+                        displayWeather(temperature, weather, name);
+
+                    })
+                    .catch(error => {
+                        alert("날씨 정보를 가져오는 중에 오류가 발생했습니다.");
+                    });
+            }, () => {
+                alert("위치 정보를 찾을 수 없습니다. 날씨 정보를 제공할 수 없습니다.");
+            });
+        } else {
+            alert("이 브라우저에서는 Geolocation을 지원하지 않습니다. 날씨 정보를 제공할 수 없습니다.");
+        }
+    }
+
+    // 페이지 로드 시 초기 날씨 정보 출력
+    window.onload = getWeather;
+</script>
+
+</body>
+</html>

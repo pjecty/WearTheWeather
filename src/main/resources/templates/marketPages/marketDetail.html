@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <th:block th:replace="component/config :: config"></th:block>
+    <link rel="stylesheet" href="/static/css/boardList.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+</head>
+<body>
+<div th:replace="component/header :: header"></div>
+<div th:replace="component/navMarket :: navMarket"></div>
+<div th:replace="component/chatNav :: chatBanner"></div>
+<div class="container">
+
+    <div th:unless="${session.memberNickName eq ProductDTO.productWriter}"></div>
+    <div style="display: flex; align-items: flex-start;">
+        <input type="hidden" id="id" th:value="${ProductDTO.id}">
+        <img id="currentImage" th:src="@{|/upload/${ProductDTO.storedFileName[0]}|}" width="500" height="500" alt=""
+             style="margin-top: 2%;">
+        <div style="margin-top: 20px; margin-left: 28px; font-size: 35px;">
+            <p th:text="${ProductDTO.productTitle}"></p>
+        </div>
+        <div style="display: flex; align-items: flex-start; margin-top: 80px;">
+            <div style="position: absolute; top:320px; left: 830px; font-size: 35px;">
+                <p th:text="${ProductDTO.getFormattedPrice()}" STYLE="font-size: 50px"></p>
+            </div>
+        </div>
+    </div>
+    <div style="display: flex; align-items: flex-start; margin-top: 80px;">
+        <div id="grayBox"></div>
+    </div>
+    <div style="display: flex; align-items: flex-start; margin-top: 80px;">
+        <div style="margin-top: -490px; margin-left: 530px; font-size: 35px;">
+            <i class="bi bi-heart-fill" style="display: inline-block; font-size: 25px;"></i>
+            <p th:text="${countMarketLikes}" id="countMarketLikes" style="font-size: 25px; display: inline-block;"></p>
+            <i class="bi bi-eye" style="display: inline-block; font-size: 25px;"></i>
+            <p th:text="${ProductDTO.productHits}" style="font-size: 25px; display: inline-block;"></p>
+            <i class="bi bi-clock" style="display: inline-block; font-size: 25px;"></i>
+            <p th:text="${ProductDTO.createdAt}" style="font-size: 25px; display: inline-block;"></p>
+            <div style="font-size: 20px; margin-top: -50px; margin-left: 560px"
+                 th:if="${session.memberNickName eq ProductDTO.productWriter}">
+                <button onclick="goMarketUpdate()" style="margin-right: 10px;">수정하기</button>
+                <button onclick="marketDelete()" style="margin-right: 10px;">삭제하기</button>
+            </div>
+        </div>
+    </div>
+    <div style="display: flex; align-items: flex-start; margin-top: 80px;">
+        <div style="margin-top: -525px; margin-left: 530px; font-size: 35px;">
+            <h5 style="display: inline-block;">상품사이즈</h5>
+            <i class="bi bi-person-bounding-box" style="display: inline-block; font-size: 25px;"></i>
+            <p th:text="${ProductDTO.productSize}" style="font-size: 25px; display: inline-block;"></p>
+        </div>
+    </div>
+    <div style="display: flex; align-items: flex-start; margin-top: 80px;">
+        <div style="margin-top: -560px; margin-left: 530px; font-size: 35px;">
+            <h5 style="display: inline-block;">거래 지역</h5>
+            <i class="bi bi-geo-alt" style="display: inline-block; font-size: 25px;"></i>
+            <p th:text="${ProductDTO.transactionArea.substring(0, 6)}"
+               style="font-size: 25px; display: inline-block;"></p>
+        </div>
+    </div>
+    <div style="display: flex; align-items: flex-start; margin-top: 80px;">
+        <div style="margin-top: -585px; margin-left: 530px; font-size: 35px;">
+            <h5 style="display: inline-block;">배송비</h5>
+            <i class="bi bi-truck" style="display: inline-block; font-size: 25px;"></i>
+            <h5 style="display: inline-block; font-size: 25px;">배송비무료</h5>
+        </div>
+    </div>
+    <div style="display: flex; align-items: flex-start; margin-top: 80px;">
+        <div id="detailButton"
+             style="margin-top: -575px; margin-left: 528px; font-size: 25px; display: flex; align-items: center;">
+            <button id="likeButton" class="detailLikeButton" onclick="toggleLike3()"
+                    style="margin-right: 10px; align-items: center;">
+                <div th:if="${marketLikes == null}" style="margin-left: 30px;">
+                    <i id="likeIcon3" class="bi bi-heart"></i> 좋아요
+                </div>
+                <div th:unless="${marketLikes == null}" style="margin-left: 30px;">
+                    <i id="likeIcon3" class="bi bi-heart-fill"></i> 좋아요
+                </div>
+            </button>
+            <button style="margin-right: 10px;" onclick="openDetail('/chat')" class="enter_chat"
+                    data-toggle="tooltip" data-placement="top" title="라이브 채팅으로 이동하기">
+                <i class="fas fa-comments"></i>신고문의
+            </button>
+            <button th:attr="onclick='productDetailPayment(\'' + ${ProductDTO.id} + '\')'">구매하기</button>
+        </div>
+    </div>
+    <div class="grayBox2"></div>
+
+    <div style="display: flex; align-items: flex-start; margin-top: 80px;">
+        <div style="margin-top: -490px; margin-left: 530px; font-size: 35px;">
+
+        </div>
+    </div>
+
+    <div class="section3" style="height: 300px">
+        <div style=" display: inline-block; align-items: flex-start; margin-top: -50px;">
+            <h2>상품정보</h2>
+
+            <!-- 오늘기준 작성한 날 -->
+            <div th:text="${ProductDTO.calculateElapsedDays}"></div>
+
+            <p th:text="${ProductDTO.productContents}"
+               style="margin-top: 20px; margin-left: 0px; white-space: pre-line; display: inline-block; line-height: 0.95;"></p>
+            <div class="grayBox_vertical"></div>
+        </div>
+    </div>
+    <div class="detail_3_left" style="margin-top: 10px">
+        <h2>판매자정보</h2>
+        <p th:text="닉네임+'&nbsp;'+ ': ' + '&nbsp;&nbsp;' + ${ProductDTO.productWriter}" style="line-height: 0.95;"></p>
+        <br>
+        <p style="line-height: 0.95; margin-top: -35px; margin-bottom: 10px;">판매상품</p>
+        <h4 th:attr="onclick='productDetailList(\'' + ${ProductDTO.id} + '\')'"
+            style="cursor: pointer;  margin-left: 530px;">
+            <p style="margin-left: 8px; font-size: 20px;">더 보기</p>
+        </h4>
+        <table style="margin-top: -155px">
+            <th:block th:each="product, iterationStatus: ${marketProductList}">
+                <th:block th:if="${iterationStatus.index % 5 == 0}"></th:block>
+                <td>
+                    <img th:src="@{|/upload/${#strings.replace(product.storedFileName[0], '[', '').replace(']', '')}|}"
+                         width="100" height="100" alt="" th:onclick="productDetail([[${product.id}]])">
+                    <span th:text="${product.getFormattedPrice()}"
+                          style="display: inline-block;  loat: left; font-size: 14px;"></span>
+                </td>
+                <th:block th:if="${(iterationStatus.index + 1) % 5 == 0 or iterationStatus.last}">
+                </th:block>
+            </th:block>
+        </table>
+    </div>
+    <div class="grayBox3"></div>
+    <div class="section3" style="height: 300px">
+        <h2 style="margin-top:  20px">연관상품</h2>
+        <table>
+            <tr>
+                <div th:each="marketProductDTOListTag, iterationStatus: ${marketProductDTOListTag}" varStatus="loop">
+                    <th:block th:if="${iterationStatus.index < 6}">
+                        <td><img style="margin-right: 30px;"
+                                 th:src="@{|/upload/${#strings.replace(marketProductDTOListTag.storedFileName[0], '[', '').replace(']', '')}|}"
+                                 width="240" height="240" alt=""
+                                 th:onclick="TagDetail([[${marketProductDTOListTag.id}]])"></td>
+                    </th:block>
+                </div>
+            </tr>
+        </table>
+
+    </div>
+</div>
+
+
+<div th:replace="component/footer :: footer"></div>
+</body>
+<script th:inline="javascript">
+
+    const productDetail = (id) => {
+        window.location.href = "/market/" + id;
+    }
+
+    const productDetailList = (id) => {
+        window.location.href = "/market/list/" + id;
+    }
+
+    const productDetailPayment = (id) => {
+        const popupWidth = 650;
+        const popupHeight = window.innerHeight;
+        const leftPosition = (window.innerWidth - popupWidth) / 2;
+        const popupWindow = window.open("/market/payment/" + id, "popupWindow", "width=" + popupWidth + ",height=" + popupHeight + ",left=" + leftPosition);
+        popupWindow.focus();
+    }
+
+    const count_marketLikes = () => {
+        const count_likes = document.querySelector("#countMarketLikes");
+        const id = document.querySelector("#id").value;
+
+        axios({
+            method: "get",
+            url: "/market/countLikes/" + id
+        }).then(res => {
+            const countLikes = res.data;
+            count_likes.innerHTML = countLikes;
+        }).catch(err = {});
+    }
+    const toggleLike3 = () => {
+        const icon = document.getElementById("likeIcon3");
+        const id = document.querySelector("#id").value;
+
+        axios({
+            method: "get",
+            url: "/market/findByMarketLikes/" + id,
+        }).then(res => {
+            icon.classList.remove("bi-heart");
+            icon.innerHTML = '<i class="bi bi-heart-fill"></i>';
+            count_marketLikes();
+        }).catch(err => {
+            icon.classList.remove("bi-heart-fill");
+            icon.innerHTML = '<i class="bi bi-heart"></i>';
+            count_marketLikes();
+        });
+    }
+
+    const goMarketUpdate = () => {
+        const id = document.querySelector("#id").value;
+        location.href = "/market/update/" + id;
+    }
+
+    const marketDelete = () => {
+        const id = document.querySelector("#id").value;
+
+        if (confirm('정말로 삭제하시겠습니까?')) {
+            axios({
+                method: "delete",
+                url: "/market/" + id
+            }).then(res => {
+                alert('삭제가 완료되었습니다.');
+                location.href = "/market/list";
+            }).catch(err => {
+                alert('오류가 발생했습니다.');
+            })
+        } else {
+            alert('삭제가 취소되었습니다');
+        }
+
+    }
+
+
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
+<script src="/starboot/js/scripts.js"></script>
+<script type="text/javascript">
+    function openDetail(url) {
+        const width = 768;
+        const height = 650;
+        const left = (window.screen.width - width) / 2;
+        const top = (window.screen.height - height) / 2;
+        window.open(url, 'detail', 'width=' + width + ', height=' + height + ', left=' + left + ', top=' + top + ', location=no, status=no, scrollbar=yes');
+    }
+
+    function TagDetail(id) {
+        location.href = "/market/" + id;
+    }
+</script>
+</html>
